@@ -9,13 +9,15 @@ Library             RPA.Browser.Selenium    auto_close=${FALSE}
 Library             RPA.HTTP
 Library             RPA.Tables
 Library             RPA.PDF
+Library             RPA.Archive
 
 
 *** Tasks ***
 Orders robots from RobotSpareBin Industries Inc.
     Open Website Menu
     Download CSV file
-    #[Teardown]    Close
+    Archive to ZIP
+    [Teardown]    Close
 
 
 *** Keywords ***
@@ -68,26 +70,26 @@ Store in PDF
     [Arguments]    ${fila}
     Wait Until Element Is Visible    id:receipt
     ${order_html}=    Get Element Attribute    id:receipt    outerHTML
-    Html To Pdf    ${order_html}    ${OUTPUT_DIR}${/}Order${fila}[Order number].pdf
+    Html To Pdf    ${order_html}    ${OUTPUT_DIR}${/}Order${/}Order${fila}[Order number].pdf
 
     ${screenshot}=    Capture Element Screenshot
     ...    id:robot-preview-image
-    ...    ${OUTPUT_DIR}${/}Order${fila}[Order number].png
+    ...    ${OUTPUT_DIR}${/}Order${/}Order${fila}[Order number].png
 
     ${files}=    Create List
-    ...    ${OUTPUT_DIR}${/}Order${fila}[Order number].png
+    ...    ${OUTPUT_DIR}${/}Order${/}Order${fila}[Order number].png
 
     Add Files To Pdf
     ...    ${files}
-    ...    ${OUTPUT_DIR}${/}Order${fila}[Order number].pdf
+    ...    ${OUTPUT_DIR}${/}Order${/}Order${fila}[Order number].pdf
     ...    True
-
-Take Robot Photo
-
-Embed Photo to PDF
 
 Order another Robot
     Click Button    id:order-another
+
+Archive to ZIP
+    ${zip_file_name}=    Set Variable    ${OUTPUT_DIR}/PDFs.zip
+    Archive Folder With Zip    ${OUTPUT_DIR}${/}Order    ${zip_file_name}
 
 Close
     Close Browser
