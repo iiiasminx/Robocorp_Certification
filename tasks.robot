@@ -10,23 +10,42 @@ Library             RPA.HTTP
 Library             RPA.Tables
 Library             RPA.PDF
 Library             RPA.Archive
+Library             RPA.Dialogs
+Library             RPA.FileSystem
+Library             RPA.Robocorp.Vault
 
 
 *** Tasks ***
 Orders robots from RobotSpareBin Industries Inc.
     Open Website Menu
-    Download CSV file
+    Input and CSV download
     Archive to ZIP
     [Teardown]    Close
 
 
 *** Keywords ***
 Open Website Menu
-    Open Available Browser    https://robotsparebinindustries.com/#/robot-order
+    ${secret}=    Get Secret    CertificationII
+    Open Available Browser    ${secret}[RoboLink]
+    # https://robotsparebinindustries.com/#/robot-order
 
 Download CSV file
-    Download    https://robotsparebinindustries.com/orders.csv    overwrite=True
+    [Arguments]    ${link}
+
+    #https://robotsparebinindustries.com/orders.csv
+    Download    ${link}    overwrite=True
     Fill Form Using CSV Data
+
+Input and CSV download
+    Add heading    Where should we download the csv from?
+    Add text input
+    ...    link
+    ...    label=link
+    ...    placeholder=Link para el csv
+    ...    rows=1
+    ${result}=    Run dialog
+    Log    ${result}
+    Download CSV file    ${result.link}
 
 Fill Form Using CSV Data
     ${table}=    Read table from CSV    orders.csv
@@ -83,6 +102,8 @@ Store in PDF
     ...    ${files}
     ...    ${OUTPUT_DIR}${/}Order${/}Order${fila}[Order number].pdf
     ...    True
+
+    Remove File    ${OUTPUT_DIR}${/}Order${/}Order${fila}[Order number].png
 
 Order another Robot
     Click Button    id:order-another
