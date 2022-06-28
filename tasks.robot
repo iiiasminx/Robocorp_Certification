@@ -12,7 +12,7 @@ Library             RPA.PDF
 Library             RPA.Archive
 Library             RPA.Dialogs
 Library             RPA.FileSystem
-Library             RPA.Robocorp.Vault
+Library             RPA.Robocloud.Secrets
 
 
 *** Tasks ***
